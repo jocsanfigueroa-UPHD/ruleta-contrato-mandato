@@ -797,7 +797,7 @@ function startGame(){
     }
 
 
-    if(players.length < 1){
+    if(1 < 1){
 
         alert(
             "Ingrese al menos un participante."
@@ -857,75 +857,6 @@ function renderPlayers(){
         );
 
     container.innerHTML = "";
-
-
-    players.forEach((name,index)=>{
-
-        const button =
-            document.createElement("button");
-
-        button.className =
-            "select-player";
-
-        button.textContent =
-            "👤 " + name;
-
-
-        button.onclick = function(){
-
-            if(spinning){
-                return;
-            }
-
-
-            selectedPlayer =
-                index;
-
-
-            document
-                .querySelectorAll(
-                    ".select-player"
-                )
-                .forEach(btn =>
-                    btn.classList.remove(
-                        "active"
-                    )
-                );
-
-
-            button.classList.add(
-                "active"
-            );
-
-
-            document
-                .getElementById(
-                    "selectedMessage"
-                )
-                .textContent =
-                "👤 La pregunta será para: " +
-                name;
-
-
-            /*
-                La ruleta solamente puede girar
-                cuando hay una persona seleccionada.
-            */
-
-            document
-                .getElementById(
-                    "spinBtn"
-                )
-                .disabled = false;
-
-        };
-
-
-        container.appendChild(button);
-
-    });
-
-}
 
 
 /* =========================================================
