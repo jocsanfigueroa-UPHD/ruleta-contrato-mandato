@@ -436,11 +436,12 @@ canvas{
 
 <main class="container">
 
+
+
     <!-- ================= JUEGO ================= -->
 
     <section class="card" id="game">
-
-        <div class="game-area">
+<div class="game-area">
 
             <!-- ================= UNA SOLA RULETA ================= -->
 
@@ -474,8 +475,7 @@ canvas{
             <!-- ================= RESULTADO ================= -->
 
             <div class="question-result" id="questionResult">
-
-                <div class="question-number" id="questionNumber">
+<div class="question-number" id="questionNumber">
                     Pregunta
                 </div>
 
@@ -771,93 +771,6 @@ function drawWheel(){
 
 drawWheel();
 
-document.getElementById("spinBtn").disabled = false;
-
-
-/* =========================================================
-   INICIAR JUEGO
-========================================================= */
-
-function startGame(){
-
-    players = [];
-
-    for(let i=1;i<=4;i++){
-
-        const value =
-            document
-                .getElementById("p"+i)
-                .value
-                .trim();
-
-        if(value !== ""){
-            players.push(value);
-        }
-
-    }
-
-
-    if(1 < 1){
-
-        alert(
-            "Ingrese al menos un participante."
-        );
-
-        return;
-    }
-
-
-    selectedPlayer = null;
-
-    usedQuestions = [];
-
-    currentQuestionIndex = null;
-
-    spinning = false;
-
-    rotation = 0;
-
-
-    document
-        .getElementById("setup")
-        .style.display = "none";
-
-    document
-        .getElementById("game")
-        .style.display = "block";
-
-
-    document
-        .getElementById("wheel")
-        .style.transform =
-        "rotate(0deg)";
-
-
-    document
-        .getElementById("questionResult")
-        .style.display = "none";
-
-
-    renderPlayers();
-
-    updateCounter();
-
-}
-
-
-/* =========================================================
-   MOSTRAR PARTICIPANTES PARA SELECCIÓN MANUAL
-========================================================= */
-
-function renderPlayers(){
-
-    const container =
-        document.getElementById(
-            "selectButtons"
-        );
-
-    container.innerHTML = "";
-
 
 /* =========================================================
    GIRAR LA RULETA
@@ -868,7 +781,6 @@ function spin(){
     if(spinning){
         return;
     }
-
 
     if(
         usedQuestions.length >=
@@ -882,9 +794,7 @@ function spin(){
         return;
     }
 
-
     spinning = true;
-
 
     const spinButton =
         document.getElementById(
@@ -896,19 +806,12 @@ function spin(){
     spinButton.textContent =
         "🎡 GIRANDO...";
 
-
-    /*
-        Elegir una pregunta que todavía
-        no haya salido.
-    */
-
     const available =
         questions
             .map((q,index)=>index)
             .filter(index =>
                 !usedQuestions.includes(index)
             );
-
 
     const selectedIndex =
         available[
@@ -918,59 +821,47 @@ function spin(){
             )
         ];
 
-
     currentQuestionIndex =
         selectedIndex;
-
-
-    /*
-        Calcular el giro para que
-        la pregunta seleccionada quede
-        exactamente bajo la flecha.
-    */
 
     const slice =
         360 / questions.length;
 
-
     const target =
         -90 -
         (
-            selectedIndex * slice
+            selectedIndex *
+            slice
         ) -
         (slice / 2);
-
 
     const current =
         rotation % 360;
 
-
     let difference =
         target - current;
-
 
     while(difference < 0){
         difference += 360;
     }
 
-
     const extraSpins =
         360 *
-        (5 + Math.floor(
-            Math.random() * 3
-        ));
-
+        (
+            5 +
+            Math.floor(
+                Math.random() * 3
+            )
+        );
 
     rotation +=
         extraSpins +
         difference;
 
-
     document
         .getElementById("wheel")
         .style.transform =
         `rotate(${rotation}deg)`;
-
 
     setTimeout(()=>{
 
@@ -988,6 +879,10 @@ function spin(){
 
 }
 
+
+/* =========================================================
+   MOSTRAR PREGUNTA
+========================================================= */
 
 /* =========================================================
    MOSTRAR PREGUNTA
@@ -1018,6 +913,7 @@ function showQuestion(index){
     /*
         Mostrar las respuestas
         para que puedan leerlas.
+        NO se asignan puntos.
     */
 
     const answer =
@@ -1082,16 +978,7 @@ function showAnswer(){
 
 function newQuestion(){
 
-    /*
-        NO cambiamos automáticamente
-        de participante.
-
-        Ustedes vuelven a seleccionar
-        quién responderá.
-    */
-
     currentQuestionIndex = null;
-
 
     document
         .getElementById(
@@ -1100,13 +987,11 @@ function newQuestion(){
         .style.display =
         "none";
 
-
     document
         .getElementById(
             "showAnswerBtn"
         )
         .disabled = true;
-
 
     if(
         usedQuestions.length <
@@ -1117,7 +1002,7 @@ function newQuestion(){
             .getElementById(
                 "spinBtn"
             )
-            .disabled = true;
+            .disabled = false;
 
         document
             .getElementById(
@@ -1127,7 +1012,6 @@ function newQuestion(){
             "🎯 GIRAR RULETA";
 
     }
-
     else{
 
         document
@@ -1145,11 +1029,14 @@ function newQuestion(){
 
     }
 
-
     updateCounter();
 
 }
 
+
+/* =========================================================
+   CONTADOR
+=========================================================
 
 /* =========================================================
    CONTADOR
