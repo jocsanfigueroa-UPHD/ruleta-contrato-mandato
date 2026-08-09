@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ruleta Jurídica - Contrato de Mandato</title>
+<style>
+:root{--azul:#342c74;--dorado:#f4c414;--blanco:#fff;--gris:#f4f4f8}
+*{box-sizing:border-box} body{margin:0;font-family:Arial,Segoe UI,sans-serif;background:linear-gradient(135deg,#342c74,#17152d);min-height:100vh;color:#222}
+header{background:#fff;text-align:center;padding:18px;box-shadow:0 4px 15px #0005}
+h1{margin:0;color:var(--azul)} header p{margin:7px 0;color:#666}
+.container{max-width:1100px;margin:22px auto;padding:0 16px}.card{background:#fff;border-radius:20px;padding:22px;box-shadow:0 10px 30px #0005;margin-bottom:18px}
+h2{color:var(--azul)} .players{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+input{width:100%;padding:13px;border:2px solid #ddd;border-radius:10px;font-size:16px}
+button{border:0;border-radius:11px;padding:13px 18px;font-weight:bold;cursor:pointer}
+.primary{background:var(--dorado);color:#211d49}.blue{background:var(--azul);color:white}.danger{background:#c0392b;color:white}
+#game{display:none}.layout{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.wheelbox{text-align:center}.wheel{width:min(470px,90vw);aspect-ratio:1;border-radius:50%;margin:auto;position:relative;transition:transform 4s cubic-bezier(.12,.8,.18,1);filter:drop-shadow(0 8px 12px #0005)}
+canvas{width:100%;height:100%}.pointer{position:absolute;top:-3px;left:50%;transform:translateX(-50%);z-index:3;width:0;height:0;border-left:18px solid transparent;border-right:18px solid transparent;border-top:0;border-bottom:38px solid var(--dorado)}
+.center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:white;border:5px solid var(--dorado);width:78px;height:78px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;color:var(--azul);z-index:2}
+.turn{background:#f3f2fa;border-left:6px solid var(--dorado);padding:12px;border-radius:10px}.timer{font-size:28px;font-weight:bold;color:var(--azul);text-align:center;margin:10px}
+.question{background:var(--gris);padding:18px;border-radius:14px;margin-top:15px}.options{display:grid;grid-template-columns:1fr 1fr;gap:10px}.option{background:white;border:2px solid #ddd;text-align:left}.option.correct{background:#d9f5e4;border-color:#159957}.option.wrong{background:#f8d9d5;border-color:#c0392b}
+#feedback{font-weight:bold;min-height:28px;margin-top:12px}.scoreboard{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.score{background:#f4f3f9;padding:12px;border-radius:10px;text-align:center}.score b{display:block;color:var(--azul);font-size:23px}
+.final{display:none;text-align:center}.winner{font-size:30px;font-weight:bold;color:#a47b00}
+.small{font-size:13px;color:#777}@media(max-width:800px){.layout{grid-template-columns:1fr}.players,.scoreboard{grid-template-columns:1fr 1fr}.options{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+<h1>⚖️ RUleta Jurídica: Contrato de Mandato</h1>
+<p>Concurso interactivo basado en el informe del grupo</p>
+</header>
+
+<div class="container">
+<section class="card" id="setup">
+<h2>👥 Registrar participantes</h2>
+<p>Los nombres de los integrantes del informe son los <b>encargados del juego</b>, no los jugadores.</p>
+<div class="players" id="inputs"></div>
+<br>
+<button class="primary" onclick="startGame()">🎮 Iniciar concurso</button>
+</section>
+
+<section class="card" id="game">
+<div class="scoreboard" id="scoreboard"></div>
+<div class="layout">
+<div class="wheelbox">
+<div class="turn" id="turn">Turno del jugador</div>
+<div class="wheel" id="wheel">
+<div class="pointer"></div><canvas id="canvas" width="500" height="500"></canvas>
+<div class="center">MANDATO</div>
+</div>
+<button class="primary" id="spinBtn" onclick="spin()">🎯 GIRAR RULETA</button>
+</div>
+<div>
+<div class="timer">⏱️ <span id="timer">30</span></div>
+<div class="question">
+<h2 id="category">Categoría</h2>
+<h3 id="question">Gira la ruleta para comenzar.</h3>
+<div class="options" id="options"></div>
+<div id="feedback"></div>
+</div>
+<button class="blue" id="nextBtn" onclick="nextQuestion()" style="display:none;margin-top:12px">➡️ Siguiente</button>
+</div>
+</div>
+</section>
+
+<section class="card final" id="final">
+<h2>🏆 ¡Concurso terminado!</h2>
+<p>Ganador:</p><div class="winner" id="winner"></div>
+<p id="winnerPoints"></p>
+<button class="primary" onclick="location.reload()">🔄 Nuevo concurso</button>
+<hr>
+<p class="small"><b>Encargados del juego:</b> Abener Alejandro Mejía Coello · Amílcar José Castro Cáceres · Ariana Rafaela Betanco Santander · Alan Israel Renderos Palomo · Mónica Valeria Sánchez Martínez</p>
+</section>
+</div>
+
+<script>
+const questions=[{"cat": "Concepto", "q": "¿Qué es el contrato de mandato según el artículo 1888?", "o": ["Un contrato laboral", "Un contrato para realizar una gestión por cuenta y encargo de otra persona", "Una compraventa", "Una donación"], "c": 1}, {"cat": "Concepto", "q": "¿Quién es el mandante?", "o": ["Quien ejecuta el encargo", "Quien confiere el encargo, poder o autorización", "Un tercero", "El juez"], "c": 1}, {"cat": "Concepto", "q": "¿Quién es el mandatario?", "o": ["Quien acepta y ejecuta el encargo", "Quien otorga el poder", "El beneficiario", "El notario"], "c": 0}, {"cat": "Especies", "q": "¿Qué caracteriza al mandato especial?", "o": ["Comprende todos los asuntos", "Se limita a uno o varios negocios específicos", "Siempre es verbal", "No tiene límites"], "c": 1}, {"cat": "Características", "q": "¿En qué se fundamenta principalmente el mandato?", "o": ["En la confianza entre las partes", "En una multa", "En una sentencia", "En una compraventa"], "c": 0}, {"cat": "Requisitos", "q": "¿Cuál es un requisito del contrato de mandato?", "o": ["Consentimiento", "Quiebra", "Revocación", "Interdicción"], "c": 0}, {"cat": "Mandatario", "q": "¿Qué debe hacer el mandatario respecto de su gestión?", "o": ["Ocultar información", "Rendir cuentas", "Vender todos los bienes", "Cambiar las instrucciones"], "c": 1}, {"cat": "Mandante", "q": "¿Qué obligación tiene el mandante respecto de los gastos?", "o": ["Ignorarlos", "Reembolsar los gastos efectuados en cumplimiento de la gestión", "Cobrarlos al mandatario", "Duplicarlos"], "c": 1}, {"cat": "Terminación", "q": "¿Cuál es una causa de terminación del mandato?", "o": ["Revocación", "Aumento de confianza", "Una reunión", "Un pago"], "c": 0}, {"cat": "Casos prácticos", "q": "En el ejemplo del exceso de facultades, ¿qué hizo José sin autorización expresa?", "o": ["Cobró alquileres", "Administró la propiedad", "Vendió el inmueble", "Pagó servicios"], "c": 2}];
+const categories=["Concepto", "Especies", "Características", "Requisitos", "Mandatario", "Mandante", "Terminación", "Casos prácticos"];
+let players=[],scores=[],turn=0,used=[],current=null,spinning=false,answered=false,angle=0,timerInterval;
+
+const colors=["#f4c414","#342c74","#2d86bc","#7b4aa8","#d99127","#4f8a70","#b44c65","#5969a8"];
+const inputs=document.getElementById("inputs");
+for(let i=1;i<=4;i++) inputs.innerHTML+=`<input id="p${i}" placeholder="Nombre del jugador ${i}">`;
+
+function drawWheel(){
+ const c=document.getElementById("canvas"),x=c.getContext("2d"),cx=250,cy=250,r=240,s=2*Math.PI/categories.length;
+ x.clearRect(0,0,500,500);
+ categories.forEach((cat,i)=>{
+  let a=i*s;
+  x.beginPath();x.moveTo(cx,cy);x.arc(cx,cy,r,a,a+s);x.closePath();
+  x.fillStyle=colors[i%colors.length];x.fill();x.strokeStyle="#fff";x.lineWidth=3;x.stroke();
+  x.save();x.translate(cx,cy);x.rotate(a+s/2);x.textAlign="right";x.fillStyle=i%2?"#fff":"#222";x.font="bold 15px Arial";
+  let t=cat.length>17?cat.slice(0,16)+"…":cat;x.fillText(t,225,5);x.restore();
+ });
+}
+drawWheel();
+
+function startGame(){
+ players=[];
+ for(let i=1;i<=4;i++){let n=document.getElementById("p"+i).value.trim();if(n)players.push(n);}
+ if(players.length<2){alert("Ingrese al menos 2 jugadores.");return;}
+ scores=players.map(()=>0);turn=0;used=[];document.getElementById("setup").style.display="none";document.getElementById("game").style.display="block";renderScores();updateTurn();
+}
+function renderScores(){
+ document.getElementById("scoreboard").innerHTML=players.map((p,i)=>`<div class="score">${p}<b>${scores[i]} pts</b></div>`).join("");
+}
+function updateTurn(){document.getElementById("turn").textContent="🎤 Turno de: "+players[turn];}
+function spin(){
+ if(spinning||answered||used.length>=questions.length)return;
+ spinning=true;document.getElementById("spinBtn").disabled=true;document.getElementById("nextBtn").style.display="none";document.getElementById("feedback").textContent="";
+ const extra=(Math.random()*5+7)*360;angle+=extra;
+ document.getElementById("wheel").style.transform=`rotate(${angle}deg)`;
+ setTimeout(()=>{spinning=false;pickCategory();},4100);
+}
+function pickCategory(){
+ const slice=360/categories.length;
+ let norm=((angle%360)+360)%360;
+ let idx=Math.floor(((360-norm)+270)%360/slice)%categories.length;
+ let cat=categories[idx];
+ let pool=questions.filter(q=>q.cat===cat&&!used.includes(q));
+ if(!pool.length)pool=questions.filter(q=>!used.includes(q));
+ current=pool[Math.floor(Math.random()*pool.length)];used.push(current);
+ showQuestion();
+}
+function showQuestion(){
+ answered=false;document.getElementById("category").textContent="📚 "+current.cat;
+ document.getElementById("question").textContent=current.q;
+ document.getElementById("options").innerHTML=current.o.map((o,i)=>`<button class="option" onclick="answer(${i},this)">${String.fromCharCode(65+i)}) ${o}</button>`).join("");
+ document.getElementById("nextBtn").style.display="none";startTimer();
+}
+function startTimer(){
+ clearInterval(timerInterval);let t=30;document.getElementById("timer").textContent=t;
+ timerInterval=setInterval(()=>{t--;document.getElementById("timer").textContent=t;if(t<=0){clearInterval(timerInterval);timeUp();}},1000);
+}
+function answer(i,b){
+ if(answered)return;answered=true;clearInterval(timerInterval);
+ [...document.querySelectorAll(".option")].forEach((el,j)=>{if(j===current.c)el.classList.add("correct")});
+ if(i===current.c){b.classList.add("correct");scores[turn]+=10;document.getElementById("feedback").textContent="✅ ¡Correcta! +10 puntos";}
+ else{b.classList.add("wrong");document.getElementById("feedback").textContent="❌ Incorrecta. La respuesta correcta está marcada."}
+ renderScores();document.getElementById("nextBtn").style.display="inline-block";
+}
+function timeUp(){
+ if(answered)return;answered=true;
+ document.querySelectorAll(".option")[current.c].classList.add("correct");
+ document.getElementById("feedback").textContent="⏰ Tiempo terminado. 0 puntos.";
+ document.getElementById("nextBtn").style.display="inline-block";
+}
+function nextQuestion(){
+ if(used.length>=questions.length){finish();return;}
+ turn=(turn+1)%players.length;updateTurn();document.getElementById("spinBtn").disabled=false;
+ document.getElementById("nextBtn").style.display="none";document.getElementById("question").textContent="Gira la ruleta.";
+ document.getElementById("options").innerHTML="";document.getElementById("category").textContent="Categoría";document.getElementById("feedback").textContent="";
+}
+function finish(){
+ clearInterval(timerInterval);document.getElementById("game").style.display="none";document.getElementById("final").style.display="block";
+ let max=Math.max(...scores),wins=players.filter((p,i)=>scores[i]===max);
+ document.getElementById("winner").textContent=wins.join(" · ");
+ document.getElementById("winnerPoints").textContent="Puntuación: "+max+" puntos";
+}
+</script>
+</body>
+</html>
