@@ -1,2207 +1,2017 @@
-
+```html
 <!DOCTYPE html>
 <html lang="es">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Ruleta Jurídica | Contrato de Mandato</title>
-
-    <style>
-
-        /* =====================================================
-           VARIABLES
-        ===================================================== */
-
-        :root {
-            --azul: #342c74;
-            --azul-oscuro: #211d49;
-            --dorado: #f4c414;
-            --blanco: #ffffff;
-            --gris: #f4f4f8;
-            --gris-texto: #666;
-            --verde: #159957;
-            --rojo: #c0392b;
-            --sombra: 0 10px 30px rgba(0, 0, 0, .18);
-        }
-
-
-        /* =====================================================
-           RESET
-        ===================================================== */
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-
-        body {
-            min-height: 100vh;
-            font-family: Arial, "Segoe UI", sans-serif;
-
-            background:
-                radial-gradient(
-                    circle at top,
-                    #4b438e 0%,
-                    #342c74 35%,
-                    #17152d 100%
-                );
-
-            color: #222;
-        }
-
-
-        button,
-        input {
-            font-family: inherit;
-        }
-
-
-        button {
-            border: none;
-            cursor: pointer;
-            transition: .2s ease;
-        }
-
-
-        button:hover {
-            transform: translateY(-2px);
-        }
-
-
-        button:disabled {
-            opacity: .55;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-
-        /* =====================================================
-           HEADER
-        ===================================================== */
-
-        .header {
-            width: 100%;
-            background: var(--blanco);
-
-            padding: 18px 20px;
-
-            box-shadow:
-                0 5px 20px rgba(0, 0, 0, .20);
-
-            position: relative;
-            z-index: 10;
-        }
-
-
-        .header-content {
-            max-width: 1100px;
-            margin: auto;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            gap: 25px;
-        }
-
-
-        /* LOGO */
-
-        .logo {
-            width: 115px;
-            height: 115px;
-
-            object-fit: contain;
-
-            flex-shrink: 0;
-        }
-
-
-        /* TEXTO DEL HEADER */
-
-        .header-text {
-            text-align: center;
-        }
-
-
-        .header-text h1 {
-            color: var(--azul);
-
-            font-size: clamp(25px, 4vw, 36px);
-
-            line-height: 1.1;
-
-            margin-bottom: 5px;
-        }
-
-
-        .header-text h2 {
-            color: var(--dorado);
-
-            font-size: clamp(18px, 3vw, 24px);
-
-            margin-bottom: 6px;
-        }
-
-
-        .header-text p {
-            color: var(--gris-texto);
-
-            font-size: clamp(12px, 2vw, 15px);
-        }
-
-
-        /* =====================================================
-           CONTENEDOR
-        ===================================================== */
-
-        .container {
-            width: 100%;
-            max-width: 1100px;
-
-            margin: 25px auto;
-
-            padding: 0 15px;
-        }
-
-
-        /* =====================================================
-           CARDS
-        ===================================================== */
-
-        .card {
-            background: var(--blanco);
-
-            border-radius: 20px;
-
-            padding: 25px;
-
-            margin-bottom: 20px;
-
-            box-shadow: var(--sombra);
-        }
-
-
-        .card h2 {
-            color: var(--azul);
-
-            margin-bottom: 10px;
-        }
-
-
-        .card p {
-            line-height: 1.5;
-        }
-
-
-        /* =====================================================
-           REGISTRO DE JUGADORES
-        ===================================================== */
-
-        .players {
-            display: grid;
-
-            grid-template-columns:
-                repeat(4, 1fr);
-
-            gap: 12px;
-
-            margin-top: 20px;
-        }
-
-
-        input {
-            width: 100%;
-
-            padding: 14px;
-
-            border:
-                2px solid #ddd;
-
-            border-radius: 12px;
-
-            font-size: 16px;
-
-            outline: none;
-
-            transition: .2s;
-        }
-
-
-        input:focus {
-            border-color: var(--dorado);
-
-            box-shadow:
-                0 0 0 3px
-                rgba(244, 196, 20, .18);
-        }
-
-
-        /* =====================================================
-           BOTONES
-        ===================================================== */
-
-        .primary,
-        .blue,
-        .danger {
-            padding: 14px 20px;
-
-            border-radius: 12px;
-
-            font-weight: bold;
-
-            font-size: 15px;
-        }
-
-
-        .primary {
-            background: var(--dorado);
-
-            color: var(--azul-oscuro);
-        }
-
-
-        .primary:hover {
-            background: #ffd52e;
-        }
-
-
-        .blue {
-            background: var(--azul);
-
-            color: white;
-        }
-
-
-        .blue:hover {
-            background: #453b91;
-        }
-
-
-        .danger {
-            background: var(--rojo);
-
-            color: white;
-        }
-
-
-        #setup .primary {
-            margin-top: 20px;
-        }
-
-
-        /* =====================================================
-           JUEGO
-        ===================================================== */
-
-        #game {
-            display: none;
-        }
-
-
-        .layout {
-            display: grid;
-
-            grid-template-columns:
-                1fr 1fr;
-
-            gap: 25px;
-
-            align-items: start;
-        }
-
-
-        /* =====================================================
-           RULETA
-        ===================================================== */
-
-        .wheelbox {
-            text-align: center;
-
-            display: flex;
-
-            flex-direction: column;
-
-            align-items: center;
-        }
-
-
-        .wheel {
-            width: min(470px, 90vw);
-
-            aspect-ratio: 1 / 1;
-
-            border-radius: 50%;
-
-            margin: 20px auto;
-
-            position: relative;
-
-            transition:
-                transform 4s
-                cubic-bezier(.12, .8, .18, 1);
-
-            filter:
-                drop-shadow(
-                    0 8px 12px rgba(0, 0, 0, .35)
-                );
-        }
-
-
-        canvas {
-            width: 100%;
-            height: 100%;
-
-            display: block;
-        }
-
-
-        /* =====================================================
-           PUNTERO
-        ===================================================== */
-
-        .pointer {
-            position: absolute;
-
-            top: -4px;
-
-            left: 50%;
-
-            transform:
-                translateX(-50%);
-
-            z-index: 3;
-
-            width: 0;
-            height: 0;
-
-            border-left:
-                18px solid transparent;
-
-            border-right:
-                18px solid transparent;
-
-            border-bottom:
-                0 solid transparent;
-
-            border-top:
-                38px solid var(--dorado);
-
-            filter:
-                drop-shadow(
-                    0 3px 3px rgba(0,0,0,.4)
-                );
-        }
-
-
-        /* =====================================================
-           CENTRO RULETA
-        ===================================================== */
-
-        .center {
-            position: absolute;
-
-            top: 50%;
-            left: 50%;
-
-            transform:
-                translate(-50%, -50%);
-
-            background: white;
-
-            border:
-                5px solid var(--dorado);
-
-            width: 80px;
-            height: 80px;
-
-            border-radius: 50%;
-
-            display: flex;
-
-            align-items: center;
-            justify-content: center;
-
-            text-align: center;
-
-            font-weight: bold;
-
-            font-size: 12px;
-
-            color: var(--azul);
-
-            z-index: 2;
-
-            box-shadow:
-                0 3px 10px rgba(0,0,0,.2);
-        }
-
-
-        /* =====================================================
-           TURNO
-        ===================================================== */
-
-        .turn {
-            width: 100%;
-
-            background:
-                #f3f2fa;
-
-            border-left:
-                6px solid var(--dorado);
-
-            padding: 13px;
-
-            border-radius: 10px;
-
-            font-weight: bold;
-
-            color: var(--azul);
-        }
-
-
-        /* =====================================================
-           BOTÓN RULETA
-        ===================================================== */
-
-        #spinBtn {
-            width: 100%;
-
-            max-width: 350px;
-
-            font-size: 17px;
-        }
-
-
-        /* =====================================================
-           TEMPORIZADOR
-        ===================================================== */
-
-        .timer {
-            font-size: 30px;
-
-            font-weight: bold;
-
-            color: var(--azul);
-
-            text-align: center;
-
-            margin: 10px;
-        }
-
-
-        /* =====================================================
-           PREGUNTA
-        ===================================================== */
-
-        .question {
-            background: var(--gris);
-
-            padding: 20px;
-
-            border-radius: 15px;
-
-            margin-top: 15px;
-        }
-
-
-        .question h2 {
-            font-size: 21px;
-
-            margin-bottom: 10px;
-        }
-
-
-        .question h3 {
-            line-height: 1.5;
-
-            font-size: 18px;
-        }
-
-
-        /* =====================================================
-           OPCIONES
-        ===================================================== */
-
-        .options {
-            display: grid;
-
-            grid-template-columns:
-                1fr 1fr;
-
-            gap: 10px;
-
-            margin-top: 15px;
-        }
-
-
-        .option {
-            background: white;
-
-            border:
-                2px solid #ddd;
-
-            text-align: left;
-
-            padding: 14px;
-
-            border-radius: 10px;
-
-            font-size: 15px;
-
-            line-height: 1.4;
-        }
-
-
-        .option:hover {
-            border-color:
-                var(--dorado);
-
-            background:
-                #fffdf0;
-        }
-
-
-        .option.correct {
-            background:
-                #d9f5e4;
-
-            border-color:
-                var(--verde);
-
-            color:
-                #126b3d;
-        }
-
-
-        .option.wrong {
-            background:
-                #f8d9d5;
-
-            border-color:
-                var(--rojo);
-
-            color:
-                #8d251b;
-        }
-
-
-        /* =====================================================
-           FEEDBACK
-        ===================================================== */
-
-        #feedback {
-            font-weight: bold;
-
-            min-height: 28px;
-
-            margin-top: 14px;
-
-            font-size: 16px;
-        }
-
-
-        /* =====================================================
-           TABLERO DE PUNTOS
-        ===================================================== */
-
-        .scoreboard {
-            display: grid;
-
-            grid-template-columns:
-                repeat(4, 1fr);
-
-            gap: 10px;
-
-            margin-bottom: 25px;
-        }
-
-
-        .score {
-            background:
-                #f4f3f9;
-
-            padding: 13px;
-
-            border-radius: 12px;
-
-            text-align: center;
-
-            overflow-wrap: anywhere;
-
-            border:
-                2px solid transparent;
-        }
-
-
-        .score b {
-            display: block;
-
-            color: var(--azul);
-
-            font-size: 23px;
-
-            margin-top: 4px;
-        }
-
-
-        /* =====================================================
-           FINAL
-        ===================================================== */
-
-        .final {
-            display: none;
-
-            text-align: center;
-        }
-
-
-        .final h2 {
-            font-size: 28px;
-        }
-
-
-        .winner {
-            font-size: clamp(24px, 5vw, 34px);
-
-            font-weight: bold;
-
-            color: #a47b00;
-
-            margin: 15px 0;
-        }
-
-
-        .final hr {
-            margin: 25px 0;
-
-            border: 0;
-
-            border-top:
-                1px solid #ddd;
-        }
-
-
-        .small {
-            font-size: 13px;
-
-            color: #777;
-
-            line-height: 1.6;
-        }
-
-
-        /* =====================================================
-           TABLET
-        ===================================================== */
-
-        @media (max-width: 900px) {
-
-            .players {
-                grid-template-columns:
-                    repeat(2, 1fr);
-            }
-
-
-            .scoreboard {
-                grid-template-columns:
-                    repeat(2, 1fr);
-            }
-
-
-            .layout {
-                grid-template-columns: 1fr;
-            }
-
-
-            .wheel {
-                width: min(500px, 85vw);
-            }
-
-        }
-
-
-        /* =====================================================
-           CELULARES
-        ===================================================== */
-
-        @media (max-width: 600px) {
-
-            .header {
-                padding: 14px 10px;
-            }
-
-
-            .header-content {
-                flex-direction: column;
-
-                gap: 8px;
-            }
-
-
-            .logo {
-                width: 85px;
-                height: 85px;
-            }
-
-
-            .header-text h1 {
-                font-size: 24px;
-            }
-
-
-            .header-text h2 {
-                font-size: 18px;
-            }
-
-
-            .header-text p {
-                font-size: 12px;
-            }
-
-
-            .container {
-                padding:
-                    0 10px;
-
-                margin-top: 15px;
-            }
-
-
-            .card {
-                padding: 16px;
-
-                border-radius: 15px;
-            }
-
-
-            .players {
-                grid-template-columns: 1fr;
-            }
-
-
-            .scoreboard {
-                grid-template-columns:
-                    1fr 1fr;
-            }
-
-
-            .wheel {
-                width: min(390px, 88vw);
-
-                margin-top: 18px;
-            }
-
-
-            .center {
-                width: 65px;
-                height: 65px;
-
-                font-size: 10px;
-
-                border-width: 4px;
-            }
-
-
-            .pointer {
-                border-left-width: 14px;
-                border-right-width: 14px;
-                border-top-width: 30px;
-            }
-
-
-            .options {
-                grid-template-columns: 1fr;
-            }
-
-
-            .option {
-                font-size: 14px;
-
-                padding: 13px;
-            }
-
-
-            .question {
-                padding: 15px;
-            }
-
-
-            .question h2 {
-                font-size: 19px;
-            }
-
-
-            .question h3 {
-                font-size: 16px;
-            }
-
-
-            #spinBtn {
-                max-width: 100%;
-
-                padding: 15px;
-            }
-
-
-            .timer {
-                font-size: 27px;
-            }
-
-
-            .winner {
-                font-size: 25px;
-            }
-
-        }
-
-
-        /* =====================================================
-           CELULARES PEQUEÑOS
-        ===================================================== */
-
-        @media (max-width: 380px) {
-
-            .header-text h1 {
-                font-size: 21px;
-            }
-
-
-            .header-text h2 {
-                font-size: 16px;
-            }
-
-
-            .scoreboard {
-                grid-template-columns: 1fr;
-            }
-
-
-            .wheel {
-                width: 82vw;
-            }
-
-
-            .card {
-                padding: 13px;
-            }
-
-        }
-
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Ruleta Jurídica | Contrato de Mandato</title>
+
+<style>
+
+:root{
+    --azul:#342c74;
+    --azul-oscuro:#211d49;
+    --dorado:#f4c414;
+    --blanco:#ffffff;
+    --gris:#f4f4f8;
+    --verde:#159957;
+    --rojo:#c0392b;
+}
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    min-height:100vh;
+    font-family:Arial,"Segoe UI",sans-serif;
+    background:
+        radial-gradient(
+            circle at top,
+            #51488f 0%,
+            #342c74 35%,
+            #17152d 100%
+        );
+    color:#222;
+}
+
+button,
+input{
+    font-family:inherit;
+}
+
+button{
+    border:0;
+    cursor:pointer;
+    transition:.2s ease;
+}
+
+button:hover{
+    transform:translateY(-2px);
+}
+
+button:disabled{
+    opacity:.55;
+    cursor:not-allowed;
+    transform:none;
+}
+
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+.header{
+    background:#fff;
+    padding:18px 20px;
+    box-shadow:0 5px 20px rgba(0,0,0,.20);
+}
+
+.header-content{
+    max-width:1100px;
+    margin:auto;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:25px;
+}
+
+.logo{
+    width:110px;
+    height:110px;
+    object-fit:contain;
+}
+
+.header-text{
+    text-align:center;
+}
+
+.header-text h1{
+    color:var(--azul);
+    font-size:clamp(25px,4vw,36px);
+}
+
+.header-text h2{
+    color:var(--dorado);
+    font-size:clamp(18px,3vw,24px);
+    margin:5px 0;
+}
+
+.header-text p{
+    color:#666;
+    font-size:clamp(12px,2vw,15px);
+}
+
+
+/* =====================================================
+   CONTENEDOR
+===================================================== */
+
+.container{
+    width:100%;
+    max-width:1100px;
+    margin:25px auto;
+    padding:0 15px;
+}
+
+.card{
+    background:#fff;
+    border-radius:20px;
+    padding:25px;
+    margin-bottom:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,.18);
+}
+
+.card h2{
+    color:var(--azul);
+    margin-bottom:10px;
+}
+
+.card p{
+    line-height:1.5;
+}
+
+
+/* =====================================================
+   JUGADORES
+===================================================== */
+
+.players{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:12px;
+    margin-top:20px;
+}
+
+.player-number{
+    display:block;
+    font-size:12px;
+    font-weight:bold;
+    color:var(--azul);
+    margin-bottom:5px;
+}
+
+input{
+    width:100%;
+    padding:14px;
+    border:2px solid #ddd;
+    border-radius:12px;
+    font-size:16px;
+    outline:none;
+}
+
+input:focus{
+    border-color:var(--dorado);
+    box-shadow:0 0 0 3px rgba(244,196,20,.18);
+}
+
+
+/* =====================================================
+   BOTONES
+===================================================== */
+
+.primary,
+.blue{
+    padding:14px 20px;
+    border-radius:12px;
+    font-weight:bold;
+    font-size:15px;
+}
+
+.primary{
+    background:var(--dorado);
+    color:var(--azul-oscuro);
+}
+
+.primary:hover{
+    background:#ffd52e;
+}
+
+.blue{
+    background:var(--azul);
+    color:#fff;
+}
+
+.blue:hover{
+    background:#453b91;
+}
+
+#setup .primary{
+    margin-top:20px;
+}
+
+
+/* =====================================================
+   JUEGO
+===================================================== */
+
+#game{
+    display:none;
+}
+
+.layout{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:25px;
+    align-items:start;
+}
+
+
+/* =====================================================
+   TABLERO
+===================================================== */
+
+.scoreboard{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:10px;
+    margin-bottom:25px;
+}
+
+.score{
+    background:#f4f3f9;
+    padding:13px;
+    border-radius:12px;
+    text-align:center;
+    overflow-wrap:anywhere;
+    border:2px solid transparent;
+    transition:.2s;
+}
+
+.score.active{
+    border-color:var(--dorado);
+    background:#fffbea;
+    box-shadow:0 3px 10px rgba(244,196,20,.30);
+}
+
+.score b{
+    display:block;
+    color:var(--azul);
+    font-size:23px;
+    margin-top:4px;
+}
+
+
+/* =====================================================
+   RULETA
+===================================================== */
+
+.wheelbox{
+    text-align:center;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+.turn{
+    width:100%;
+    background:#f3f2fa;
+    border-left:6px solid var(--dorado);
+    padding:13px;
+    border-radius:10px;
+    font-weight:bold;
+    color:var(--azul);
+}
+
+.wheel{
+    width:min(470px,90vw);
+    aspect-ratio:1;
+    border-radius:50%;
+    margin:20px auto;
+    position:relative;
+    transition:
+        transform 4s cubic-bezier(.12,.8,.18,1);
+    filter:drop-shadow(0 8px 12px rgba(0,0,0,.35));
+}
+
+canvas{
+    width:100%;
+    height:100%;
+    display:block;
+}
+
+.pointer{
+    position:absolute;
+    top:-4px;
+    left:50%;
+    transform:translateX(-50%);
+    z-index:3;
+    width:0;
+    height:0;
+    border-left:18px solid transparent;
+    border-right:18px solid transparent;
+    border-top:38px solid var(--dorado);
+}
+
+.center{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    background:#fff;
+    border:5px solid var(--dorado);
+    width:80px;
+    height:80px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    font-weight:bold;
+    font-size:12px;
+    color:var(--azul);
+    z-index:2;
+    box-shadow:0 3px 10px rgba(0,0,0,.20);
+}
+
+#spinBtn{
+    width:100%;
+    max-width:350px;
+    font-size:17px;
+}
+
+
+/* =====================================================
+   PREGUNTA
+===================================================== */
+
+.timer{
+    font-size:30px;
+    font-weight:bold;
+    color:var(--azul);
+    text-align:center;
+    margin:10px;
+}
+
+.question{
+    background:var(--gris);
+    padding:20px;
+    border-radius:15px;
+    margin-top:15px;
+}
+
+.question h2{
+    font-size:21px;
+}
+
+.question h3{
+    line-height:1.5;
+    font-size:18px;
+    margin-top:8px;
+}
+
+.options{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-top:15px;
+}
+
+.option{
+    background:#fff;
+    border:2px solid #ddd;
+    text-align:left;
+    padding:14px;
+    border-radius:10px;
+    font-size:15px;
+    line-height:1.4;
+}
+
+.option:hover{
+    border-color:var(--dorado);
+    background:#fffdf0;
+}
+
+.option.correct{
+    background:#d9f5e4;
+    border-color:var(--verde);
+    color:#126b3d;
+}
+
+.option.wrong{
+    background:#f8d9d5;
+    border-color:var(--rojo);
+    color:#8d251b;
+}
+
+#feedback{
+    font-weight:bold;
+    min-height:28px;
+    margin-top:14px;
+}
+
+.question-counter{
+    text-align:center;
+    margin-top:8px;
+    font-size:13px;
+    color:#777;
+}
+
+
+/* =====================================================
+   FINAL
+===================================================== */
+
+.final{
+    display:none;
+    text-align:center;
+}
+
+.winner{
+    font-size:clamp(24px,5vw,34px);
+    font-weight:bold;
+    color:#a47b00;
+    margin:15px 0;
+}
+
+.final hr{
+    margin:25px 0;
+    border:0;
+    border-top:1px solid #ddd;
+}
+
+.small{
+    font-size:13px;
+    color:#777;
+    line-height:1.6;
+}
+
+
+/* =====================================================
+   TABLET
+===================================================== */
+
+@media(max-width:900px){
+
+    .players{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .scoreboard{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .layout{
+        grid-template-columns:1fr;
+    }
+}
+
+
+/* =====================================================
+   CELULAR
+===================================================== */
+
+@media(max-width:600px){
+
+    .header{
+        padding:14px 10px;
+    }
+
+    .header-content{
+        flex-direction:column;
+        gap:8px;
+    }
+
+    .logo{
+        width:85px;
+        height:85px;
+    }
+
+    .header-text h1{
+        font-size:24px;
+    }
+
+    .header-text h2{
+        font-size:18px;
+    }
+
+    .header-text p{
+        font-size:12px;
+    }
+
+    .container{
+        padding:0 10px;
+        margin-top:15px;
+    }
+
+    .card{
+        padding:16px;
+        border-radius:15px;
+    }
+
+    .players{
+        grid-template-columns:1fr;
+    }
+
+    .scoreboard{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .wheel{
+        width:min(390px,88vw);
+    }
+
+    .center{
+        width:65px;
+        height:65px;
+        font-size:10px;
+        border-width:4px;
+    }
+
+    .pointer{
+        border-left-width:14px;
+        border-right-width:14px;
+        border-top-width:30px;
+    }
+
+    .options{
+        grid-template-columns:1fr;
+    }
+
+    .question{
+        padding:15px;
+    }
+
+    .question h2{
+        font-size:19px;
+    }
+
+    .question h3{
+        font-size:16px;
+    }
+
+    #spinBtn{
+        max-width:100%;
+    }
+}
+
+
+/* =====================================================
+   CELULAR PEQUEÑO
+===================================================== */
+
+@media(max-width:400px){
+
+    .scoreboard{
+        grid-template-columns:1fr;
+    }
+
+    .wheel{
+        width:82vw;
+    }
+
+    .card{
+        padding:13px;
+    }
+}
+
+</style>
 </head>
 
 
 <body>
 
 
-    <!-- =====================================================
-         ENCABEZADO
-    ====================================================== -->
+<!-- =====================================================
+     ENCABEZADO
+===================================================== -->
 
-    <header class="header">
+<header class="header">
 
-        <div class="header-content">
+    <div class="header-content">
 
-            <!--
-                IMPORTANTE:
-                Coloca el archivo logo_uph.png
-                en la misma carpeta que index.html
-            -->
+        <img
+            src="logo_uph.png"
+            alt="Universidad Politécnica de Honduras"
+            class="logo"
+        >
 
-            <img
-                src="logo_uph.png"
-                alt="Universidad Politécnica de Honduras"
-                class="logo"
-            >
+        <div class="header-text">
 
+            <h1>
+                ⚖️ Ruleta Jurídica
+            </h1>
 
-            <div class="header-text">
+            <h2>
+                Contrato de Mandato
+            </h2>
 
-                <h1>
-                    ⚖️ Ruleta Jurídica
-                </h1>
-
-                <h2>
-                    Contrato de Mandato
-                </h2>
-
-                <p>
-                    Concurso interactivo basado en el informe del grupo
-                </p>
-
-            </div>
+            <p>
+                Concurso interactivo basado en el informe del grupo
+            </p>
 
         </div>
 
-    </header>
+    </div>
+
+</header>
 
 
-
-    <!-- =====================================================
-         CONTENIDO
-    ====================================================== -->
-
-    <main class="container">
+<main class="container">
 
 
-        <!-- =================================================
-             REGISTRO DE JUGADORES
-        ================================================== -->
+<!-- =====================================================
+     REGISTRO
+===================================================== -->
 
-        <section
-            class="card"
-            id="setup"
-        >
+<section class="card" id="setup">
 
-            <h2>
-                👥 Registrar participantes
-            </h2>
+    <h2>
+        👥 Registrar participantes
+    </h2>
+
+    <p>
+        Registre los nombres de los <b>4 jugadores</b>.
+        Los integrantes del informe son los
+        <b>encargados del juego</b>, no los jugadores.
+    </p>
+
+    <div class="players" id="inputs"></div>
+
+    <button
+        class="primary"
+        onclick="startGame()"
+    >
+        🎮 Iniciar concurso
+    </button>
+
+</section>
 
 
-            <p>
-                Los nombres de los integrantes del informe son los
-                <b>encargados del juego</b>, no los jugadores.
-            </p>
+<!-- =====================================================
+     JUEGO
+===================================================== -->
 
+<section class="card" id="game">
+
+    <div
+        class="scoreboard"
+        id="scoreboard"
+    ></div>
+
+
+    <div class="layout">
+
+
+        <!-- RULETA -->
+
+        <div class="wheelbox">
 
             <div
-                class="players"
-                id="inputs"
-            ></div>
-
-
-            <button
-                class="primary"
-                onclick="startGame()"
+                class="turn"
+                id="turn"
             >
-                🎮 Iniciar concurso
-            </button>
+                Turno del jugador
+            </div>
 
-        </section>
-
-
-
-        <!-- =================================================
-             JUEGO
-        ================================================== -->
-
-        <section
-            class="card"
-            id="game"
-        >
-
-
-            <!-- TABLERO -->
 
             <div
-                class="scoreboard"
-                id="scoreboard"
-            ></div>
+                class="wheel"
+                id="wheel"
+            >
 
+                <div class="pointer"></div>
 
-            <div class="layout">
+                <canvas
+                    id="canvas"
+                    width="500"
+                    height="500"
+                ></canvas>
 
-
-                <!-- =========================================
-                     RULETA
-                ========================================== -->
-
-                <div class="wheelbox">
-
-
-                    <div
-                        class="turn"
-                        id="turn"
-                    >
-                        Turno del jugador
-                    </div>
-
-
-                    <div
-                        class="wheel"
-                        id="wheel"
-                    >
-
-                        <div class="pointer"></div>
-
-
-                        <canvas
-                            id="canvas"
-                            width="500"
-                            height="500"
-                        ></canvas>
-
-
-                        <div class="center">
-                            MANDATO
-                        </div>
-
-                    </div>
-
-
-                    <button
-                        class="primary"
-                        id="spinBtn"
-                        onclick="spin()"
-                    >
-                        🎯 GIRAR RULETA
-                    </button>
-
+                <div class="center">
+                    MANDATO
                 </div>
-
-
-
-                <!-- =========================================
-                     PREGUNTAS
-                ========================================== -->
-
-                <div>
-
-
-                    <div class="timer">
-
-                        ⏱️
-                        <span id="timer">
-                            30
-                        </span>
-
-                    </div>
-
-
-                    <div class="question">
-
-
-                        <h2 id="category">
-                            Categoría
-                        </h2>
-
-
-                        <h3 id="question">
-                            Gira la ruleta para comenzar.
-                        </h3>
-
-
-                        <div
-                            class="options"
-                            id="options"
-                        ></div>
-
-
-                        <div
-                            id="feedback"
-                        ></div>
-
-
-                    </div>
-
-
-                    <button
-                        class="blue"
-                        id="nextBtn"
-                        onclick="nextQuestion()"
-                        style="display:none; margin-top:12px;"
-                    >
-                        ➡️ Siguiente
-                    </button>
-
-
-                </div>
-
 
             </div>
 
-        </section>
-
-
-
-        <!-- =================================================
-             RESULTADO FINAL
-        ================================================== -->
-
-        <section
-            class="card final"
-            id="final"
-        >
-
-
-            <h2>
-                🏆 ¡Concurso terminado!
-            </h2>
-
-
-            <p>
-                Ganador:
-            </p>
-
-
-            <div
-                class="winner"
-                id="winner"
-            ></div>
-
-
-            <p id="winnerPoints"></p>
-
 
             <button
                 class="primary"
-                onclick="location.reload()"
+                id="spinBtn"
+                onclick="spin()"
             >
-                🔄 Nuevo concurso
+                🎯 GIRAR RULETA
             </button>
 
+        </div>
 
-            <hr>
+
+        <!-- PREGUNTAS -->
+
+        <div>
+
+            <div class="timer">
+                ⏱️
+                <span id="timer">30</span>
+            </div>
 
 
-            <p class="small">
+            <div class="question">
+
+                <h2 id="category">
+                    Categoría
+                </h2>
+
+                <h3 id="question">
+                    Gira la ruleta para comenzar.
+                </h3>
+
+                <div
+                    class="question-counter"
+                    id="questionCounter"
+                >
+                    Pregunta 0 de 16
+                </div>
+
+                <div
+                    class="options"
+                    id="options"
+                ></div>
+
+                <div id="feedback"></div>
+
+            </div>
+
+
+            <button
+                class="blue"
+                id="nextBtn"
+                onclick="nextQuestion()"
+                style="display:none;margin-top:12px;"
+            >
+                ➡️ Siguiente jugador
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     RESULTADO
+===================================================== -->
+
+<section
+    class="card final"
+    id="final"
+>
+
+    <h2>
+        🏆 ¡Concurso terminado!
+    </h2>
+
+    <p>
+        Ganador:
+    </p>
+
+    <div
+        class="winner"
+        id="winner"
+    ></div>
+
+    <p id="winnerPoints"></p>
+
+    <button
+        class="primary"
+        onclick="location.reload()"
+    >
+        🔄 Nuevo concurso
+    </button>
+
+    <hr>
+
+    <p class="small">
+
+        <b>
+            Encargados del juego:
+        </b>
+
+        <br>
+
+        Abener Alejandro Mejía Coello ·
+        Amílcar José Castro Cáceres ·
+        Ariana Rafaela Betanco Santander ·
+        Alan Israel Renderos Palomo ·
+        Mónica Valeria Sánchez Martínez
+
+    </p>
+
+</section>
+
+
+</main>
+
+
+<script>
+
+
+/* =====================================================
+   16 PREGUNTAS
+===================================================== */
+
+const questions = [
+
+    {
+        cat:"Concepto",
+        q:"¿Qué es el contrato de mandato según el artículo 1888?",
+        o:[
+            "Un contrato laboral",
+            "Un contrato para realizar una gestión por cuenta y encargo de otra persona",
+            "Una compraventa",
+            "Una donación"
+        ],
+        c:1
+    },
+
+    {
+        cat:"Concepto",
+        q:"¿Quién es el mandante?",
+        o:[
+            "Quien ejecuta el encargo",
+            "Quien confiere el encargo, poder o autorización",
+            "Un tercero",
+            "El juez"
+        ],
+        c:1
+    },
+
+    {
+        cat:"Concepto",
+        q:"¿Quién es el mandatario?",
+        o:[
+            "Quien acepta y ejecuta el encargo",
+            "Quien otorga el poder",
+            "El beneficiario",
+            "El notario"
+        ],
+        c:0
+    },
+
+    {
+        cat:"Especies",
+        q:"¿Qué caracteriza al mandato especial?",
+        o:[
+            "Comprende todos los asuntos",
+            "Se limita a uno o varios negocios específicos",
+            "Siempre es verbal",
+            "No tiene límites"
+        ],
+        c:1
+    },
+
+    {
+        cat:"Características",
+        q:"¿En qué se fundamenta principalmente el mandato?",
+        o:[
+            "En la confianza entre las partes",
+            "En una multa",
+            "En una sentencia",
+            "En una compraventa"
+        ],
+        c:0
+    },
+
+    {
+        cat:"Requisitos",
+        q:"¿Cuál es un requisito del contrato de mandato?",
+        o:[
+            "Consentimiento",
+            "Quiebra",
+            "Revocación",
+            "Interdicción"
+        ],
+        c:0
+    },
+
+    {
+        cat:"Mandatario",
+        q:"¿Qué debe hacer el mandatario respecto de su gestión?",
+        o:[
+            "Ocultar información",
+            "Rendir cuentas",
+            "Vender todos los bienes",
+            "Cambiar las instrucciones"
+        ],
+        c:1
+    },
+
+    {
+        cat:"Mandante",
+        q:"¿Qué obligación tiene el mandante respecto de los gastos?",
+        o:[
+            "Ignorarlos",
+            "Reembolsar los gastos efectuados en cumplimiento de la gestión",
+            "Cobrarlos al mandatario",
+            "Duplicarlos"
+        ],
+        c:1
+    },
+
+    {
+        cat:"Terminación",
+        q:"¿Cuál es una causa de terminación del mandato?",
+        o:[
+            "Revocación",
+            "Aumento de confianza",
+            "Una reunión",
+            "Un pago"
+        ],
+        c:0
+    },
+
+    {
+        cat:"Casos prácticos",
+        q:"En el ejemplo del exceso de facultades, ¿qué hizo José sin autorización expresa?",
+        o:[
+            "Cobró alquileres",
+            "Administró la propiedad",
+            "Vendió el inmueble",
+            "Pagó servicios"
+        ],
+        c:2
+    },
+
+    {
+        cat:"Concepto",
+        q:"¿Cuál es una característica fundamental del mandato?",
+        o:[
+            "Existe un encargo",
+            "Siempre existe compraventa",
+            "Solo interviene el juez",
+            "No existe autorización"
+        ],
+        c:0
+    },
+
+    {
+        cat:"Especies",
+        q:"¿Qué tipo de mandato comprende varios asuntos generales?",
+        o:[
+            "Mandato general",
+            "Mandato especial",
+            "Mandato judicial únicamente",
+            "Mandato inexistente"
+        ],
+        c:0
+    },
+
+    {
+        cat:"Mandatario",
+        q:"¿Qué debe respetar el mandatario durante la ejecución del encargo?",
+        o:[
+            "Las instrucciones del mandante",
+            "Sus propias instrucciones",
+            "Las instrucciones de cualquier tercero",
+            "Ninguna instrucción"
+        ],
+        c:0
+    },
+
+    {
+        cat:"Mandante",
+        q:"¿Quién confiere el poder o autorización en el mandato?",
+        o:[
+            "El mandatario",
+            "El mandante",
+            "El juez",
+            "El notario"
+        ],
+        c:1
+    },
+
+    {
+        cat:"Requisitos",
+        q:"¿Qué elemento permite que exista acuerdo entre las partes?",
+        o:[
+            "Consentimiento",
+            "Sanción",
+            "Multa",
+            "Sentencia"
+        ],
+        c:0
+    },
+
+    {
+        cat:"Terminación",
+        q:"¿Qué puede producir la terminación del mandato?",
+        o:[
+            "La revocación",
+            "Una felicitación",
+            "Una reunión",
+            "Un aumento de salario"
+        ],
+        c:0
+    }
+
+];
+
+
+const categories=[
+
+    "Concepto",
+    "Especies",
+    "Características",
+    "Requisitos",
+    "Mandatario",
+    "Mandante",
+    "Terminación",
+    "Casos prácticos"
+
+];
+
+
+let players=[];
+
+let scores=[];
+
+let turn=0;
+
+let used=[];
+
+let current=null;
+
+let spinning=false;
+
+let answered=true;
+
+let angle=0;
+
+let timerInterval=null;
+
+
+/* =====================================================
+   COLORES RULETA
+===================================================== */
+
+const colors=[
+
+    "#f4c414",
+    "#342c74",
+    "#2d86bc",
+    "#7b4aa8",
+    "#d99127",
+    "#4f8a70",
+    "#b44c65",
+    "#5969a8"
+
+];
+
+
+/* =====================================================
+   CREAR 4 JUGADORES
+===================================================== */
+
+const inputs=
+    document.getElementById("inputs");
+
+
+for(let i=1;i<=4;i++){
+
+    inputs.innerHTML+=`
+
+        <div>
+
+            <span class="player-number">
+                Jugador ${i}
+            </span>
+
+            <input
+                id="p${i}"
+                placeholder="Nombre del jugador ${i}"
+                autocomplete="off"
+            >
+
+        </div>
+
+    `;
+
+}
+
+
+/* =====================================================
+   DIBUJAR RULETA
+===================================================== */
+
+function drawWheel(){
+
+    const canvas=
+        document.getElementById("canvas");
+
+    const ctx=
+        canvas.getContext("2d");
+
+    const cx=250;
+
+    const cy=250;
+
+    const r=240;
+
+    const slice=
+        (2*Math.PI)/
+        categories.length;
+
+
+    ctx.clearRect(
+        0,
+        0,
+        500,
+        500
+    );
+
+
+    categories.forEach((cat,i)=>{
+
+        const a=i*slice;
+
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            cx,
+            cy
+        );
+
+        ctx.arc(
+            cx,
+            cy,
+            r,
+            a,
+            a+slice
+        );
+
+        ctx.closePath();
+
+
+        ctx.fillStyle=
+            colors[
+                i%colors.length
+            ];
+
+        ctx.fill();
+
+
+        ctx.strokeStyle="#fff";
+
+        ctx.lineWidth=3;
+
+        ctx.stroke();
+
+
+        ctx.save();
+
+        ctx.translate(
+            cx,
+            cy
+        );
+
+        ctx.rotate(
+            a+slice/2
+        );
+
+        ctx.textAlign="right";
+
+        ctx.fillStyle=
+            i%2
+            ? "#fff"
+            : "#222";
+
+        ctx.font=
+            "bold 15px Arial";
+
+
+        const text=
+            cat.length>17
+            ? cat.slice(0,16)+"…"
+            : cat;
+
+
+        ctx.fillText(
+            text,
+            225,
+            5
+        );
+
+
+        ctx.restore();
+
+    });
+
+}
+
+
+drawWheel();
+
+
+/* =====================================================
+   INICIAR
+===================================================== */
+
+function startGame(){
+
+    players=[];
+
+
+    for(let i=1;i<=4;i++){
+
+        const name=
+            document
+            .getElementById("p"+i)
+            .value
+            .trim();
+
+
+        if(name){
+
+            players.push(name);
+
+        }
+
+    }
+
+
+    if(players.length<2){
+
+        alert(
+            "Ingrese al menos 2 jugadores."
+        );
+
+        return;
+
+    }
+
+
+    scores=
+        players.map(
+            ()=>0
+        );
+
+
+    turn=0;
+
+    used=[];
+
+    current=null;
+
+    answered=true;
+
+    spinning=false;
+
+    angle=0;
+
+
+    document
+        .getElementById("wheel")
+        .style.transform=
+        "rotate(0deg)";
+
+
+    document
+        .getElementById("setup")
+        .style.display=
+        "none";
+
+
+    document
+        .getElementById("game")
+        .style.display=
+        "block";
+
+
+    document
+        .getElementById("final")
+        .style.display=
+        "none";
+
+
+    document
+        .getElementById("spinBtn")
+        .disabled=
+        false;
+
+
+    document
+        .getElementById("spinBtn")
+        .textContent=
+        "🎯 GIRAR RULETA";
+
+
+    document
+        .getElementById("question")
+        .textContent=
+        "Gira la ruleta para comenzar.";
+
+
+    document
+        .getElementById("category")
+        .textContent=
+        "Categoría";
+
+
+    document
+        .getElementById("options")
+        .innerHTML="";
+
+
+    document
+        .getElementById("feedback")
+        .textContent="";
+
+
+    document
+        .getElementById("nextBtn")
+        .style.display=
+        "none";
+
+
+    document
+        .getElementById("questionCounter")
+        .textContent=
+        "Pregunta 0 de 16";
+
+
+    document
+        .getElementById("timer")
+        .textContent=
+        "30";
+
+
+    updateTurn();
+
+}
+
+
+/* =====================================================
+   MARCADOR
+===================================================== */
+
+function renderScores(){
+
+    document
+        .getElementById("scoreboard")
+        .innerHTML=
+
+        players
+        .map((player,index)=>`
+
+            <div class="score ${
+                index===turn
+                ? "active"
+                : ""
+            }">
+
+                👤 ${player}
 
                 <b>
-                    Encargados del juego:
+                    ${scores[index]} pts
                 </b>
 
-                <br>
+            </div>
 
-                Abener Alejandro Mejía Coello
+        `)
+        .join("");
 
-                ·
-
-                Amílcar José Castro Cáceres
-
-                ·
-
-                Ariana Rafaela Betanco Santander
-
-                ·
-
-                Alan Israel Renderos Palomo
-
-                ·
-
-                Mónica Valeria Sánchez Martínez
-
-            </p>
+}
 
 
-        </section>
+/* =====================================================
+   TURNO
+===================================================== */
+
+function updateTurn(){
+
+    document
+        .getElementById("turn")
+        .textContent=
+        "🎤 Turno de: "+
+        players[turn];
+
+    renderScores();
+
+}
 
 
-    </main>
+/* =====================================================
+   GIRAR RULETA
+===================================================== */
+
+function spin(){
+
+    /*
+       SOLO se puede girar cuando:
+       - no está girando
+       - no hay una pregunta pendiente
+       - quedan preguntas
+    */
+
+    if(spinning){
+
+        return;
+
+    }
 
 
+    if(!answered){
 
-    <!-- =====================================================
-         JAVASCRIPT
-    ====================================================== -->
+        return;
 
-    <script>
-
-
-        /* =====================================================
-           PREGUNTAS
-        ===================================================== */
-
-        const questions = [
-
-            {
-                cat: "Concepto",
-                q: "¿Qué es el contrato de mandato según el artículo 1888?",
-                o: [
-                    "Un contrato laboral",
-                    "Un contrato para realizar una gestión por cuenta y encargo de otra persona",
-                    "Una compraventa",
-                    "Una donación"
-                ],
-                c: 1
-            },
+    }
 
 
-            {
-                cat: "Concepto",
-                q: "¿Quién es el mandante?",
-                o: [
-                    "Quien ejecuta el encargo",
-                    "Quien confiere el encargo, poder o autorización",
-                    "Un tercero",
-                    "El juez"
-                ],
-                c: 1
-            },
+    if(used.length>=questions.length){
+
+        finish();
+
+        return;
+
+    }
 
 
-            {
-                cat: "Concepto",
-                q: "¿Quién es el mandatario?",
-                o: [
-                    "Quien acepta y ejecuta el encargo",
-                    "Quien otorga el poder",
-                    "El beneficiario",
-                    "El notario"
-                ],
-                c: 0
-            },
+    spinning=true;
+
+    answered=false;
 
 
-            {
-                cat: "Especies",
-                q: "¿Qué caracteriza al mandato especial?",
-                o: [
-                    "Comprende todos los asuntos",
-                    "Se limita a uno o varios negocios específicos",
-                    "Siempre es verbal",
-                    "No tiene límites"
-                ],
-                c: 1
-            },
+    const spinBtn=
+        document.getElementById("spinBtn");
 
 
-            {
-                cat: "Características",
-                q: "¿En qué se fundamenta principalmente el mandato?",
-                o: [
-                    "En la confianza entre las partes",
-                    "En una multa",
-                    "En una sentencia",
-                    "En una compraventa"
-                ],
-                c: 0
-            },
+    spinBtn.disabled=true;
+
+    spinBtn.textContent=
+        "🎡 GIRANDO...";
 
 
-            {
-                cat: "Requisitos",
-                q: "¿Cuál es un requisito del contrato de mandato?",
-                o: [
-                    "Consentimiento",
-                    "Quiebra",
-                    "Revocación",
-                    "Interdicción"
-                ],
-                c: 0
-            },
+    document
+        .getElementById("nextBtn")
+        .style.display=
+        "none";
 
 
-            {
-                cat: "Mandatario",
-                q: "¿Qué debe hacer el mandatario respecto de su gestión?",
-                o: [
-                    "Ocultar información",
-                    "Rendir cuentas",
-                    "Vender todos los bienes",
-                    "Cambiar las instrucciones"
-                ],
-                c: 1
-            },
+    document
+        .getElementById("feedback")
+        .textContent="";
 
 
-            {
-                cat: "Mandante",
-                q: "¿Qué obligación tiene el mandante respecto de los gastos?",
-                o: [
-                    "Ignorarlos",
-                    "Reembolsar los gastos efectuados en cumplimiento de la gestión",
-                    "Cobrarlos al mandatario",
-                    "Duplicarlos"
-                ],
-                c: 1
-            },
+    const extra=
+        (Math.random()*5+7)*360;
 
 
-            {
-                cat: "Terminación",
-                q: "¿Cuál es una causa de terminación del mandato?",
-                o: [
-                    "Revocación",
-                    "Aumento de confianza",
-                    "Una reunión",
-                    "Un pago"
-                ],
-                c: 0
-            },
+    angle+=extra;
 
 
-            {
-                cat: "Casos prácticos",
-                q: "En el ejemplo del exceso de facultades, ¿qué hizo José sin autorización expresa?",
-                o: [
-                    "Cobró alquileres",
-                    "Administró la propiedad",
-                    "Vendió el inmueble",
-                    "Pagó servicios"
-                ],
-                c: 2
-            }
+    document
+        .getElementById("wheel")
+        .style.transform=
+        `rotate(${angle}deg)`;
 
+
+    setTimeout(()=>{
+
+        spinning=false;
+
+        pickCategory();
+
+    },4100);
+
+}
+
+
+/* =====================================================
+   SELECCIONAR CATEGORÍA
+===================================================== */
+
+function pickCategory(){
+
+    const slice=
+        360/categories.length;
+
+
+    const normalized=
+        (
+            angle%360+360
+        )%360;
+
+
+    const index=
+        Math.floor(
+            (
+                360-
+                normalized+
+                270
+            )%
+            360/
+            slice
+        )%
+        categories.length;
+
+
+    const category=
+        categories[index];
+
+
+    let pool=
+        questions.filter(
+            q=>
+                q.cat===category &&
+                !used.includes(q)
+        );
+
+
+    if(!pool.length){
+
+        pool=
+            questions.filter(
+                q=>
+                    !used.includes(q)
+            );
+
+    }
+
+
+    if(!pool.length){
+
+        finish();
+
+        return;
+
+    }
+
+
+    current=
+        pool[
+            Math.floor(
+                Math.random()*pool.length
+            )
         ];
 
 
+    used.push(current);
 
-        /* =====================================================
-           CATEGORÍAS
-        ===================================================== */
 
-        const categories = [
+    showQuestion();
 
-            "Concepto",
-            "Especies",
-            "Características",
-            "Requisitos",
-            "Mandatario",
-            "Mandante",
-            "Terminación",
-            "Casos prácticos"
+}
 
-        ];
 
+/* =====================================================
+   MOSTRAR PREGUNTA
+===================================================== */
 
+function showQuestion(){
 
-        /* =====================================================
-           VARIABLES DEL JUEGO
-        ===================================================== */
+    answered=false;
 
-        let players = [];
 
-        let scores = [];
+    document
+        .getElementById("category")
+        .textContent=
+        "📚 "+current.cat;
 
-        let turn = 0;
 
-        let used = [];
+    document
+        .getElementById("question")
+        .textContent=
+        current.q;
 
-        let current = null;
 
-        let spinning = false;
+    document
+        .getElementById("questionCounter")
+        .textContent=
+        `Pregunta ${used.length} de ${questions.length}`;
 
-        let answered = false;
 
-        let angle = 0;
+    document
+        .getElementById("options")
+        .innerHTML=
 
-        let timerInterval;
+        current.o
+        .map((option,index)=>`
 
+            <button
+                class="option"
+                onclick="answer(${index},this)"
+            >
 
+                ${String.fromCharCode(65+index)})
+                ${option}
 
-        /* =====================================================
-           COLORES DE LA RULETA
-        ===================================================== */
+            </button>
 
-        const colors = [
+        `)
+        .join("");
 
-            "#f4c414",
-            "#342c74",
-            "#2d86bc",
-            "#7b4aa8",
-            "#d99127",
-            "#4f8a70",
-            "#b44c65",
-            "#5969a8"
 
-        ];
+    document
+        .getElementById("nextBtn")
+        .style.display=
+        "none";
 
 
+    startTimer();
 
-        /* =====================================================
-           CREAR INPUTS
-        ===================================================== */
+}
 
-        const inputs =
-            document.getElementById("inputs");
 
+/* =====================================================
+   TEMPORIZADOR
+===================================================== */
 
-        for (
-            let i = 1;
-            i <= 4;
-            i++
-        ) {
+function startTimer(){
 
-            inputs.innerHTML += `
+    clearInterval(
+        timerInterval
+    );
 
-                <input
-                    id="p${i}"
-                    placeholder="Nombre del jugador ${i}"
-                    autocomplete="off"
-                >
 
-            `;
+    let time=30;
 
-        }
 
+    document
+        .getElementById("timer")
+        .textContent=
+        time;
 
 
-        /* =====================================================
-           DIBUJAR RULETA
-        ===================================================== */
+    timerInterval=
+        setInterval(()=>{
 
-        function drawWheel() {
-
-            const canvas =
-                document.getElementById("canvas");
-
-
-            const ctx =
-                canvas.getContext("2d");
-
-
-            const cx = 250;
-
-            const cy = 250;
-
-            const r = 240;
-
-            const slice =
-                (2 * Math.PI) /
-                categories.length;
-
-
-            ctx.clearRect(
-                0,
-                0,
-                500,
-                500
-            );
-
-
-            categories.forEach(
-                (cat, i) => {
-
-                    const a =
-                        i * slice;
-
-
-                    /* SECCIÓN */
-
-                    ctx.beginPath();
-
-                    ctx.moveTo(
-                        cx,
-                        cy
-                    );
-
-
-                    ctx.arc(
-                        cx,
-                        cy,
-                        r,
-                        a,
-                        a + slice
-                    );
-
-
-                    ctx.closePath();
-
-
-                    ctx.fillStyle =
-                        colors[
-                            i %
-                            colors.length
-                        ];
-
-
-                    ctx.fill();
-
-
-                    ctx.strokeStyle =
-                        "#ffffff";
-
-
-                    ctx.lineWidth = 3;
-
-                    ctx.stroke();
-
-
-                    /* TEXTO */
-
-                    ctx.save();
-
-
-                    ctx.translate(
-                        cx,
-                        cy
-                    );
-
-
-                    ctx.rotate(
-                        a + slice / 2
-                    );
-
-
-                    ctx.textAlign =
-                        "right";
-
-
-                    ctx.fillStyle =
-                        i % 2
-                            ? "#ffffff"
-                            : "#222222";
-
-
-                    ctx.font =
-                        "bold 15px Arial";
-
-
-                    let text =
-                        cat.length > 17
-                            ? cat.slice(0, 16) + "…"
-                            : cat;
-
-
-                    ctx.fillText(
-                        text,
-                        225,
-                        5
-                    );
-
-
-                    ctx.restore();
-
-                }
-            );
-
-        }
-
-
-        drawWheel();
-
-
-
-        /* =====================================================
-           INICIAR JUEGO
-        ===================================================== */
-
-        function startGame() {
-
-            players = [];
-
-
-            for (
-                let i = 1;
-                i <= 4;
-                i++
-            ) {
-
-                const name =
-                    document
-                        .getElementById(`p${i}`)
-                        .value
-                        .trim();
-
-
-                if (name) {
-
-                    players.push(name);
-
-                }
-
-            }
-
-
-            if (players.length < 2) {
-
-                alert(
-                    "Ingrese al menos 2 jugadores."
-                );
-
-                return;
-
-            }
-
-
-            scores =
-                players.map(
-                    () => 0
-                );
-
-
-            turn = 0;
-
-            used = [];
-
-
-            document
-                .getElementById("setup")
-                .style.display = "none";
-
-
-            document
-                .getElementById("game")
-                .style.display = "block";
-
-
-            renderScores();
-
-            updateTurn();
-
-        }
-
-
-
-        /* =====================================================
-           MOSTRAR PUNTUACIONES
-        ===================================================== */
-
-        function renderScores() {
-
-            document
-                .getElementById("scoreboard")
-                .innerHTML =
-
-                players
-                    .map(
-                        (player, index) => `
-
-                            <div class="score">
-
-                                ${player}
-
-                                <b>
-                                    ${scores[index]} pts
-                                </b>
-
-                            </div>
-
-                        `
-                    )
-                    .join("");
-
-        }
-
-
-
-        /* =====================================================
-           ACTUALIZAR TURNO
-        ===================================================== */
-
-        function updateTurn() {
-
-            document
-                .getElementById("turn")
-                .textContent =
-                "🎤 Turno de: " +
-                players[turn];
-
-        }
-
-
-
-        /* =====================================================
-           GIRAR RULETA
-        ===================================================== */
-
-        function spin() {
-
-            if (
-                spinning ||
-                answered ||
-                used.length >= questions.length
-            ) {
-
-                return;
-
-            }
-
-
-            spinning = true;
-
-
-            document
-                .getElementById("spinBtn")
-                .disabled = true;
-
-
-            document
-                .getElementById("nextBtn")
-                .style.display = "none";
-
-
-            document
-                .getElementById("feedback")
-                .textContent = "";
-
-
-            const extra =
-                (
-                    Math.random() * 5 +
-                    7
-                ) * 360;
-
-
-            angle += extra;
-
-
-            document
-                .getElementById("wheel")
-                .style.transform =
-                `rotate(${angle}deg)`;
-
-
-            setTimeout(
-                () => {
-
-                    spinning = false;
-
-                    pickCategory();
-
-                },
-                4100
-            );
-
-        }
-
-
-
-        /* =====================================================
-           SELECCIONAR CATEGORÍA
-        ===================================================== */
-
-        function pickCategory() {
-
-            const slice =
-                360 /
-                categories.length;
-
-
-            const normalized =
-                (
-                    angle % 360 +
-                    360
-                ) % 360;
-
-
-            const index =
-                Math.floor(
-                    (
-                        360 -
-                        normalized +
-                        270
-                    ) %
-                    360 /
-                    slice
-                ) %
-                categories.length;
-
-
-            const category =
-                categories[index];
-
-
-            let pool =
-                questions.filter(
-                    question =>
-                        question.cat === category &&
-                        !used.includes(question)
-                );
-
-
-            if (!pool.length) {
-
-                pool =
-                    questions.filter(
-                        question =>
-                            !used.includes(question)
-                    );
-
-            }
-
-
-            if (!pool.length) {
-
-                finish();
-
-                return;
-
-            }
-
-
-            current =
-                pool[
-                    Math.floor(
-                        Math.random() *
-                        pool.length
-                    )
-                ];
-
-
-            used.push(current);
-
-
-            showQuestion();
-
-        }
-
-
-
-        /* =====================================================
-           MOSTRAR PREGUNTA
-        ===================================================== */
-
-        function showQuestion() {
-
-            answered = false;
-
-
-            document
-                .getElementById("category")
-                .textContent =
-                "📚 " +
-                current.cat;
-
-
-            document
-                .getElementById("question")
-                .textContent =
-                current.q;
-
-
-            document
-                .getElementById("options")
-                .innerHTML =
-
-                current.o
-                    .map(
-                        (option, index) => `
-
-                            <button
-                                class="option"
-                                onclick="answer(${index}, this)"
-                            >
-                                ${String.fromCharCode(
-                                    65 + index
-                                )})
-                                ${option}
-                            </button>
-
-                        `
-                    )
-                    .join("");
-
-
-            document
-                .getElementById("nextBtn")
-                .style.display = "none";
-
-
-            startTimer();
-
-        }
-
-
-
-        /* =====================================================
-           TEMPORIZADOR
-        ===================================================== */
-
-        function startTimer() {
-
-            clearInterval(
-                timerInterval
-            );
-
-
-            let time = 30;
+            time--;
 
 
             document
                 .getElementById("timer")
-                .textContent =
+                .textContent=
                 time;
 
 
-            timerInterval =
-                setInterval(
-                    () => {
+            if(time<=0){
 
-                        time--;
-
-
-                        document
-                            .getElementById("timer")
-                            .textContent =
-                            time;
-
-
-                        if (time <= 0) {
-
-                            clearInterval(
-                                timerInterval
-                            );
-
-
-                            timeUp();
-
-                        }
-
-                    },
-                    1000
+                clearInterval(
+                    timerInterval
                 );
 
-        }
-
-
-
-        /* =====================================================
-           RESPONDER
-        ===================================================== */
-
-        function answer(
-            index,
-            button
-        ) {
-
-            if (answered) {
-
-                return;
+                timeUp();
 
             }
 
+        },1000);
 
-            answered = true;
-
-
-            clearInterval(
-                timerInterval
-            );
+}
 
 
-            document
-                .querySelectorAll(".option")
-                .forEach(
-                    (element, i) => {
+/* =====================================================
+   RESPUESTA
+===================================================== */
 
-                        if (
-                            i === current.c
-                        ) {
+function answer(
+    index,
+    button
+){
 
-                            element
-                                .classList
-                                .add(
-                                    "correct"
-                                );
+    if(answered){
 
-                        }
+        return;
 
-                    }
-                );
+    }
 
 
-            if (
-                index === current.c
-            ) {
-
-                button
-                    .classList
-                    .add("correct");
+    answered=true;
 
 
-                scores[turn] += 10;
+    clearInterval(
+        timerInterval
+    );
 
 
-                document
-                    .getElementById("feedback")
-                    .textContent =
-                    "✅ ¡Correcta! +10 puntos";
-
-            } else {
-
-                button
-                    .classList
-                    .add("wrong");
+    const options=
+        document
+        .querySelectorAll(".option");
 
 
-                document
-                    .getElementById("feedback")
-                    .textContent =
-                    "❌ Incorrecta. La respuesta correcta está marcada.";
+    options.forEach(
+        (element,i)=>{
+
+            if(i===current.c){
+
+                element
+                .classList
+                .add("correct");
 
             }
 
-
-            renderScores();
-
-
-            document
-                .getElementById("nextBtn")
-                .style.display =
-                "inline-block";
+            element.disabled=true;
 
         }
+    );
 
 
+    if(index===current.c){
 
-        /* =====================================================
-           TIEMPO TERMINADO
-        ===================================================== */
+        button
+        .classList
+        .add("correct");
 
-        function timeUp() {
 
-            if (answered) {
+        scores[turn]+=10;
 
-                return;
+
+        document
+        .getElementById("feedback")
+        .textContent=
+        "✅ ¡Correcta! +10 puntos";
+
+    }
+    else{
+
+        button
+        .classList
+        .add("wrong");
+
+
+        document
+        .getElementById("feedback")
+        .textContent=
+        "❌ Incorrecta. La respuesta correcta está marcada.";
+
+    }
+
+
+    renderScores();
+
+
+    document
+        .getElementById("spinBtn")
+        .disabled=
+        true;
+
+
+    document
+        .getElementById("nextBtn")
+        .style.display=
+        "inline-block";
+
+
+    /*
+       Si es la última pregunta,
+       cambiar el texto.
+    */
+
+    if(used.length>=questions.length){
+
+        document
+        .getElementById("nextBtn")
+        .textContent=
+        "🏆 Ver resultados";
+
+    }
+    else{
+
+        document
+        .getElementById("nextBtn")
+        .textContent=
+        "➡️ Siguiente jugador";
+
+    }
+
+}
+
+
+/* =====================================================
+   TIEMPO TERMINADO
+===================================================== */
+
+function timeUp(){
+
+    if(answered){
+
+        return;
+
+    }
+
+
+    answered=true;
+
+
+    const options=
+        document
+        .querySelectorAll(".option");
+
+
+    options.forEach(
+        (element,i)=>{
+
+            element.disabled=true;
+
+
+            if(i===current.c){
+
+                element
+                .classList
+                .add("correct");
 
             }
 
-
-            answered = true;
-
-
-            const options =
-                document
-                    .querySelectorAll(".option");
-
-
-            if (options[current.c]) {
-
-                options[current.c]
-                    .classList
-                    .add("correct");
-
-            }
-
-
-            document
-                .getElementById("feedback")
-                .textContent =
-                "⏰ Tiempo terminado. 0 puntos.";
-
-
-            document
-                .getElementById("nextBtn")
-                .style.display =
-                "inline-block";
-
         }
+    );
 
 
-
-        /* =====================================================
-           SIGUIENTE PREGUNTA
-        ===================================================== */
-
-        function nextQuestion() {
-
-            if (
-                used.length >=
-                questions.length
-            ) {
-
-                finish();
-
-                return;
-
-            }
+    document
+        .getElementById("feedback")
+        .textContent=
+        "⏰ Tiempo terminado. 0 puntos.";
 
 
-            turn =
-                (
-                    turn + 1
-                ) %
-                players.length;
+    document
+        .getElementById("spinBtn")
+        .disabled=
+        true;
 
 
-            updateTurn();
+    document
+        .getElementById("nextBtn")
+        .style.display=
+        "inline-block";
 
 
-            document
-                .getElementById("spinBtn")
-                .disabled = false;
+    if(used.length>=questions.length){
+
+        document
+        .getElementById("nextBtn")
+        .textContent=
+        "🏆 Ver resultados";
+
+    }
+    else{
+
+        document
+        .getElementById("nextBtn")
+        .textContent=
+        "➡️ Siguiente jugador";
+
+    }
+
+}
 
 
-            document
-                .getElementById("nextBtn")
-                .style.display =
-                "none";
+/* =====================================================
+   SIGUIENTE
+===================================================== */
+
+function nextQuestion(){
+
+    clearInterval(
+        timerInterval
+    );
 
 
-            document
-                .getElementById("question")
-                .textContent =
-                "Gira la ruleta para comenzar.";
+    /*
+       SI YA SE UTILIZARON TODAS
+       LAS PREGUNTAS
+    */
+
+    if(
+        used.length>=questions.length
+    ){
+
+        finish();
+
+        return;
+
+    }
 
 
-            document
-                .getElementById("options")
-                .innerHTML = "";
+    /*
+       CAMBIAR JUGADOR
+    */
+
+    turn=
+        (turn+1)%
+        players.length;
 
 
-            document
-                .getElementById("category")
-                .textContent =
-                "Categoría";
+    current=null;
+
+    answered=true;
+
+    spinning=false;
 
 
-            document
-                .getElementById("feedback")
-                .textContent = "";
+    updateTurn();
 
 
-            document
-                .getElementById("timer")
-                .textContent =
-                "30";
+    /*
+       LIMPIAR PREGUNTA
+    */
 
-        }
-
-
-
-        /* =====================================================
-           FINALIZAR CONCURSO
-        ===================================================== */
-
-        function finish() {
-
-            clearInterval(
-                timerInterval
-            );
+    document
+        .getElementById("category")
+        .textContent=
+        "Categoría";
 
 
-            document
-                .getElementById("game")
-                .style.display =
-                "none";
+    document
+        .getElementById("question")
+        .textContent=
+        "Gira la ruleta para comenzar.";
 
 
-            document
-                .getElementById("final")
-                .style.display =
-                "block";
+    document
+        .getElementById("options")
+        .innerHTML="";
 
 
-            const max =
-                Math.max(...scores);
+    document
+        .getElementById("feedback")
+        .textContent="";
 
 
-            const winners =
-                players.filter(
-                    (player, index) =>
-                        scores[index] === max
-                );
+    document
+        .getElementById("timer")
+        .textContent=
+        "30";
 
 
-            document
-                .getElementById("winner")
-                .textContent =
-                winners.join(" · ");
+    document
+        .getElementById("nextBtn")
+        .style.display=
+        "none";
 
 
-            document
-                .getElementById("winnerPoints")
-                .textContent =
-                "Puntuación: " +
-                max +
-                " puntos";
+    /*
+       AQUÍ ESTÁ LA CORRECCIÓN
+       QUE PERMITE VOLVER A GIRAR
+    */
 
-        }
+    const spinBtn=
+        document.getElementById("spinBtn");
 
 
-    </script>
+    spinBtn.disabled=false;
+
+    spinBtn.textContent=
+        "🎯 GIRAR RULETA";
+
+
+}
+
+
+/* =====================================================
+   FINAL
+===================================================== */
+
+function finish(){
+
+    clearInterval(
+        timerInterval
+    );
+
+
+    document
+        .getElementById("game")
+        .style.display=
+        "none";
+
+
+    document
+        .getElementById("final")
+        .style.display=
+        "block";
+
+
+    const max=
+        Math.max(...scores);
+
+
+    const winners=
+        players.filter(
+            (player,index)=>
+                scores[index]===max
+        );
+
+
+    document
+        .getElementById("winner")
+        .textContent=
+        winners.join(" · ");
+
+
+    document
+        .getElementById("winnerPoints")
+        .textContent=
+        "Puntuación: "+
+        max+
+        " puntos";
+
+}
+
+</script>
 
 </body>
-
 </html>
+```
