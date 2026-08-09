@@ -466,8 +466,7 @@ canvas{
 
             <button
                 id="spinBtn"
-                onclick="spin()"
-                disabled>
+                onclick="spin()">
                 🎯 GIRAR RULETA
             </button>
 
@@ -475,10 +474,6 @@ canvas{
             <!-- ================= RESULTADO ================= -->
 
             <div class="question-result" id="questionResult">
-
-                <div class="player" id="resultPlayer">
-                    👤 Responde:
-                </div>
 
                 <div class="question-number" id="questionNumber">
                     Pregunta
@@ -776,6 +771,8 @@ function drawWheel(){
 
 drawWheel();
 
+document.getElementById("spinBtn").disabled = false;
+
 
 /* =========================================================
    INICIAR JUEGO
@@ -937,10 +934,7 @@ function renderPlayers(){
 
 function spin(){
 
-    if(
-        spinning ||
-        selectedPlayer === null
-    ){
+    if(spinning){
         return;
     }
 
@@ -1075,14 +1069,6 @@ function showQuestion(index){
 
     document
         .getElementById(
-            "resultPlayer"
-        )
-        .textContent =
-        "👤 Pregunta seleccionada";
-
-
-    document
-        .getElementById(
             "questionNumber"
         )
         .textContent =
@@ -1101,7 +1087,6 @@ function showQuestion(index){
     /*
         Mostrar las respuestas
         para que puedan leerlas.
-        NO se asignan puntos.
     */
 
     const answer =
@@ -1190,28 +1175,6 @@ function newQuestion(){
             "showAnswerBtn"
         )
         .disabled = true;
-
-
-    document
-        .getElementById(
-            "selectedMessage"
-        )
-        .textContent =
-        "Seleccione quién responderá la siguiente pregunta";
-
-
-    document
-        .querySelectorAll(
-            ".select-player"
-        )
-        .forEach(btn =>
-            btn.classList.remove(
-                "active"
-            )
-        );
-
-
-    selectedPlayer = null;
 
 
     if(
