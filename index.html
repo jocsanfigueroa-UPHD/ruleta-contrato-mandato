@@ -214,7 +214,7 @@ button{
 
 .wheel-wrap{
     position:relative;
-    width:min(560px,90vw);
+    width:min(620px,94vw);
     aspect-ratio:1;
     margin:25px auto;
 }
@@ -694,7 +694,6 @@ function drawWheel(){
         600
     );
 
-
     questions.forEach((question,index)=>{
 
         const start =
@@ -703,6 +702,7 @@ function drawWheel(){
         const end =
             start + slice;
 
+        /* SEGMENTO */
 
         ctx.beginPath();
 
@@ -731,43 +731,135 @@ function drawWheel(){
         ctx.stroke();
 
 
-        /* Número de pregunta */
+        /* TEXTO COMPLETO DE LA PREGUNTA */
 
         ctx.save();
 
-        ctx.translate(
-            cx,
-            cy
-        );
+        ctx.translate(cx,cy);
 
         ctx.rotate(
             start + slice / 2
         );
 
-        ctx.textAlign =
-            "right";
+        ctx.textAlign = "right";
+        ctx.textBaseline = "middle";
 
         ctx.fillStyle =
             (index === 0 ||
              index === 4 ||
              index === 8)
-            ? "#222"
-            : "#fff";
+            ? "#222222"
+            : "#ffffff";
+
+
+        /* Número */
 
         ctx.font =
-            "bold 28px Arial";
+            "bold 16px Arial";
 
         ctx.fillText(
             "P" + (index + 1),
-            270,
-            10
+            272,
+            -28
         );
+
+
+        /* Preparar pregunta para varias líneas */
+
+        const words =
+            question.q.split(" ");
+
+        const lines = [];
+
+        let line = "";
+
+        words.forEach(word => {
+
+            const test =
+                line
+                ? line + " " + word
+                : word;
+
+            if(
+                ctx.measureText(test).width
+                > 245
+            ){
+
+                if(line){
+                    lines.push(line);
+                }
+
+                line = word;
+
+            }else{
+
+                line = test;
+
+            }
+
+        });
+
+        if(line){
+            lines.push(line);
+        }
+
+
+        /* Máximo 4 líneas para que permanezca dentro */
+
+        const visibleLines =
+            lines.slice(0,4);
+
+
+        if(
+            lines.length > 4
+        ){
+
+            visibleLines[3] =
+                visibleLines[3].substring(
+                    0,
+                    Math.max(
+                        0,
+                        visibleLines[3].length - 3
+                    )
+                ) + "...";
+
+        }
+
+
+        ctx.font =
+            "bold 10px Arial";
+
+
+        const lineHeight = 14;
+
+        const startY =
+            -(
+                visibleLines.length *
+                lineHeight
+            ) / 2 + 4;
+
+
+        visibleLines.forEach(
+            (text,lineIndex)=>{
+
+                ctx.fillText(
+                    text,
+                    272,
+                    startY +
+                    lineIndex *
+                    lineHeight
+                );
+
+            }
+        );
+
 
         ctx.restore();
 
     });
 
 }
+
 
 drawWheel();
 
